@@ -3,6 +3,7 @@
 
 CREATE DATABASE tienda_mariat;
 -- Conectarse a la BD (en psql usar: \c tienda_mariat)
+\c tienda_mariat
 
 -- ============================
 -- Crear las tablas
@@ -10,9 +11,10 @@ CREATE DATABASE tienda_mariat;
 
 CREATE TABLE Producto (
     pk_idProducto INT NOT NULL,
-    nombre VARCHAR(100),
-    precio DECIMAL(10,2),
-    stock INT,
+    nombre VARCHAR(100) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
+    fecha_vencimiento DATE NOT NULL,
+    estado VARCHAR(20) DEFAULT 'disponible' NOT NULL CHECK (estado IN ('disponible', 'vencido')),
     codigo_barras VARCHAR(50)
 );
 
@@ -79,7 +81,7 @@ CREATE TABLE Movimiento_inventario (
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Momento del movimiento
     motivo TEXT,                                 -- Descripción del movimiento (venta, compra, ajuste, devolución, etc.)
     fk_idProducto INT NOT NULL,                  -- Relacionado con el producto
-    fk_idUsuario INT NOT NULL,                            -- Usuario que realizó la acción
+    fk_idUsuario INT NOT NULL                          -- Usuario que realizó la acción
 );
 
 
@@ -213,13 +215,15 @@ CREATE SEQUENCE seq_movimiento_inventario START 1;
 --- Trigger para Producto
 
 CREATE OR REPLACE FUNCTION set_producto_pk()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+AS $$
 BEGIN
     IF NEW.pk_idProducto IS NULL THEN
         NEW.pk_idProducto := nextval('seq_producto');
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_producto_pk
 BEFORE INSERT ON Producto
@@ -236,6 +240,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_cliente_pk
 BEFORE INSERT ON Cliente
@@ -252,6 +257,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_venta_pk
 BEFORE INSERT ON Venta
@@ -268,6 +274,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_detalle_venta_pk
 BEFORE INSERT ON Detalle_venta
@@ -284,6 +291,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_credito_pk
 BEFORE INSERT ON Credito
@@ -300,6 +308,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_proveedor_pk
 BEFORE INSERT ON Proveedor
@@ -316,6 +325,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_compra_pk
 BEFORE INSERT ON Compra
@@ -332,6 +342,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_detalle_compra_pk
 BEFORE INSERT ON Detalle_compra
@@ -348,6 +359,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_usuario_pk
 BEFORE INSERT ON Usuario
@@ -364,6 +376,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_set_movimiento_inventario_pk
 BEFORE INSERT ON Movimiento_inventario
