@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
             boton = QPushButton(nombre)
             boton.clicked.connect(lambda _, c=clase: self.cambiar_ventana(c))
             menu.addWidget(boton)
-            self.stack.addWidget(c())
+            self.stack.addWidget(clase())
 
         menu.addStretch()
         layout.addLayout(menu, 1)
