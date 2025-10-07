@@ -15,16 +15,17 @@ class MainWindow(QMainWindow):
         menu = QVBoxLayout()
         self.stack = QStackedWidget()
 
-        botones = {
-            "Productos": ProductosWindow,
-            "Ventas": VentasWindow,
+        # Instancias de ventanas para mantener el estado y facilitar la comparación de clases
+        self.ventanas = {
+            "Productos": ProductosWindow(),
+            "Ventas": VentasWindow(),
         }
 
-        for nombre, clase in botones.items():
+        for nombre, instancia in self.ventanas.items():
             boton = QPushButton(nombre)
-            boton.clicked.connect(lambda _, c=clase: self.cambiar_ventana(c))
+            boton.clicked.connect(lambda _, c=type(instancia): self.cambiar_ventana(c))
             menu.addWidget(boton)
-            self.stack.addWidget(clase())
+            self.stack.addWidget(instancia)
 
         menu.addStretch()
         layout.addLayout(menu, 1)

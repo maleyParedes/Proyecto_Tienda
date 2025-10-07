@@ -3,7 +3,7 @@
 -- ===========================================
 
 -- Crear la base de datos (ejecutar solo una vez)
--- CREATE DATABASE tienda_mariat;
+CREATE DATABASE IF NOT EXISTS tienda_mariat;
 
 -- Conectarse a la base de datos
 \c tienda_mariat
